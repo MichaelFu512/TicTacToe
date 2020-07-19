@@ -39,10 +39,92 @@ public class TicTacToe {
 		boolean gameEnd = verticalCheck(gameBoard, x, o);
 		if(gameEnd == false) {
 			gameEnd = horizontalCheck(gameBoard, x, o);
+			gameEnd = diagonalCheck(gameBoard, x, o);
 		}
 		return gameEnd;
 	}
 	
+	//TODO: make a lot less if-else statements and replace the magic numbers
+	public static boolean diagonalCheck(char[][] gameBoard, char x, char o) {
+		int winLine = 0;
+		boolean isX = false;
+		boolean leftDown = false;
+		
+		if(gameBoard[0][0] == x) {
+			winLine++;
+			isX = true;
+			
+		}
+		else if (gameBoard[0][0] == o) {
+			winLine++;
+		}
+		
+		else {
+			if(gameBoard[0][4] == x) {
+				winLine++;
+				isX = true;
+				leftDown = true;
+			}
+			
+			else if (gameBoard[0][4] == o) {
+				winLine++;
+				leftDown = true;
+			}
+			
+			else {
+				return false;
+			}
+		}
+		
+		if(isX == true) {
+			if(gameBoard[2][2] == x) {
+				winLine++;
+			}
+			else {
+				return false;
+			}
+		}
+		
+		else {
+			if(gameBoard[2][2] == o) {
+				winLine++;
+			}
+			else {
+				return false;
+			}
+		}
+		
+		if(leftDown == false) {
+			if(isX == true && gameBoard[4][4] == x) {
+				winLine++;
+			}
+			else if(isX == false && gameBoard[4][4] == o) {
+				winLine++;
+			}
+			else {
+				return false;
+			}
+		}
+		
+		else {
+			if(isX == true && gameBoard[4][0] == x) {
+				winLine++;
+			}
+			else if(isX == false && gameBoard[4][0] == o) {
+				winLine++;
+			}
+			else {
+				return false;
+			}
+		}
+		
+		if(winLine == win) {
+			return true;
+		}
+		
+		return false;
+		
+	}
 	public static boolean horizontalCheck(char[][] gameBoard, char x, char o) {
 		for(int i = 1; i <= thirdSpot; i++) {
 			int winLine = 0; //checks if there is three in a column for a symbol
