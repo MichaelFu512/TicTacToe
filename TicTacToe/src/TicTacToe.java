@@ -5,18 +5,30 @@ public class TicTacToe {
 	private static final int secondSpot = 2;
 	private static final int thirdSpot = 3;
 	
+	private static final int fRow = 0;
+	private static final int sRow = 2;
+	private static final int tRow = 4;
+	
+	private static final int fCol = 0;
+	private static final int sCol = 2;
+	private static final int tCol = 4;
+	
 	private static final int win = 3;
 	
 	private static final char X = 'X';
 	private static final char O = 'O';
+	
+	private static final String oWins = "O wins!";
+	private static final String xWins = "X wins!";
 
 	public static void main(String[] args) {
 		boolean gameDone = false;
-		char[][] gameBoard = {{' ', '|', ' ', '|', ' '}, 
-				{'-', '+', '-', '+', '-'}, 
-				{' ', '|', ' ', '|', ' '}, 
+		char[][] gameBoard = 
+			    {{' ' , '|', ' ', '|', ' '}, //row 1 [0] columns = [0][2][4]
+				{'-' , '+', '-', '+', '-'}, 
+				{' ', '|', ' ', '|', ' '},  //row 2 [2] columns = [0][2][4]
 				{'-', '+', '-', '+', '-'},
-				{' ', '|', ' ', '|', ' '}};
+				{' ', '|', ' ', '|', ' '}};  //row 3 [4] columns = [0][2][4]
 
 		printGameBoard(gameBoard);
 		
@@ -32,169 +44,185 @@ public class TicTacToe {
 			gameDone = checkGameState(gameBoard, X, O);
 		}
 		System.out.println("DONE");
+		System.out.println("FINAL BOARD STATE");
 		printGameBoard(gameBoard);
 	}
 	
 	public static boolean checkGameState(char[][] gameBoard, char x, char o) {
 		boolean gameEnd = verticalCheck(gameBoard, x, o);
-		if(gameEnd == false) {
+		if(!gameEnd) {
 			gameEnd = horizontalCheck(gameBoard, x, o);
+			
+			if(gameEnd) {
+				return gameEnd;
+			}
 			gameEnd = diagonalCheck(gameBoard, x, o);
+			
+			if(gameEnd) {
+				return gameEnd;
+			}
+			
+			gameEnd = isBoardFull(gameBoard);
 		}
 		return gameEnd;
 	}
 	
-	//TODO: make a lot less if-else statements and replace the magic numbers
+	public static boolean isBoardFull(char[][] gameBoard) {
+		boolean boardFull = true; // bool used to remember if board is full
+		
+		//loops through entire board looking for an empty space
+		for(char[] x : gameBoard) {
+			for(char c : x) {
+				
+				//if there is an empty space, then board is not full
+				if(c == ' ') {
+					boardFull = false;
+				}
+			}	
+		}
+		
+		//if board is full, the game is over
+		if(boardFull) {
+			System.out.println("Board is full. DRAW!");
+		}
+		
+		return boardFull;
+	}
+	
 	public static boolean diagonalCheck(char[][] gameBoard, char x, char o) {
-		int winLine = 0;
-		boolean isX = false;
-		boolean leftDown = false;
-		
-		if(gameBoard[0][0] == x) {
-			winLine++;
-			isX = true;
-			
-		}
-		else if (gameBoard[0][0] == o) {
-			winLine++;
-		}
-		
-		else {
-			if(gameBoard[0][4] == x) {
-				winLine++;
-				isX = true;
-				leftDown = true;
-			}
-			
-			else if (gameBoard[0][4] == o) {
-				winLine++;
-				leftDown = true;
-			}
-			
-			else {
-				return false;
-			}
-		}
-		
-		if(isX == true) {
-			if(gameBoard[2][2] == x) {
-				winLine++;
-			}
-			else {
-				return false;
-			}
-		}
-		
-		else {
-			if(gameBoard[2][2] == o) {
-				winLine++;
-			}
-			else {
-				return false;
-			}
-		}
-		
-		if(leftDown == false) {
-			if(isX == true && gameBoard[4][4] == x) {
-				winLine++;
-			}
-			else if(isX == false && gameBoard[4][4] == o) {
-				winLine++;
-			}
-			else {
-				return false;
-			}
-		}
-		
-		else {
-			if(isX == true && gameBoard[4][0] == x) {
-				winLine++;
-			}
-			else if(isX == false && gameBoard[4][0] == o) {
-				winLine++;
-			}
-			else {
-				return false;
-			}
-		}
-		
-		if(winLine == win) {
+		boolean check = false;
+		check = upDiagCheck(gameBoard, x, o);
+		if(check) {
 			return true;
 		}
-		
+		check = downDiagCheck(gameBoard, x, o);
+		if(check) {
+			return true;
+		}
 		return false;
-		
 	}
+	/*
+	 * x - -
+	 * - x -
+	 * - - x
+	 * Checks for that
+	 */
+	public static boolean upDiagCheck(char[][] gameBoard, char x, char o) {
+		char checker = gameBoard[fRow][fCol];
+		if(checker == ' ' ) {
+			return false;
+		}
+		//this check checks [2][2], [4][4]
+		for(int i = sRow; i <= tRow; i+= 2) {
+			if(gameBoard[i][i] != checker) {
+				return false;
+			}
+		}
+		
+		if(checker == x) {
+			System.out.println(xWins);
+		}
+		else {
+			System.out.println(oWins);
+		}
+		
+		return true;
+	}
+	
+	/*
+	 * - - x
+	 * - x -
+	 * x - -
+	 * Checks for that
+	 */
+	public static boolean downDiagCheck(char[][] gameBoard, char x, char o) {
+		char checker = gameBoard[fRow][tCol];
+		if(checker == ' ' ) {
+			return false;
+		}
+		
+		if(gameBoard[sRow][sCol] != checker) {
+			return false;
+		}
+		
+		if(gameBoard[tRow][fCol] != checker) {
+			return false;
+		}
+		
+		if(checker == x) {
+			System.out.println(xWins);
+		}
+		else {
+			System.out.println(oWins);
+		}
+		
+		return true;
+	}
+	
+	/*
+	 *  x x x
+	 *  - - -
+	 *  - - -
+	 */
 	public static boolean horizontalCheck(char[][] gameBoard, char x, char o) {
-		for(int i = 1; i <= thirdSpot; i++) {
-			int winLine = 0; //checks if there is three in a column for a symbol
-			boolean isX = false; //bool used to see if the symbol for check is x
-			int row = positionCorrection(i); //corrects position of column
-			
-			//starts the check for three in a row for x
-			if(gameBoard[row][0] == x) {
-				winLine++;
-				isX = true;
-			}
-			
-			//starts the check for three in a row for o
-			else if(gameBoard[row][0] == o) {
-				winLine++;
-			}
-			
-			//if there's nothing on the first col, then there isn't three in a row
-			else {
+		char checker = ' ';
+		for(int i = fRow; i <= tRow; i+=2) {
+			checker = gameBoard[i][fCol];
+			if(checker == ' ') {
 				continue;
 			}
-			
-			//if checking for x
-			if(isX == true) {
-				for(int j = 2; j <= thirdSpot; j++) {
-					
-					int col = positionCorrection(j); //corrects row position
-	
-					//breaks if the row isn't strictly x
-					if(gameBoard[row][col] != x) {
-						break;
+			for(int j = fCol; j <= tCol; j+=2) {
+				char check = gameBoard[i][j];
+				if(check != checker) {
+					break;
+				}
+				if(j == tCol) {
+					if(checker == x) {
+						System.out.println(xWins);
 					}
-					
 					else {
-						winLine++;
+						System.out.println(oWins);
 					}
-		
-				} //end for loop for j
-
-			} //end if statement
-			
-			//checks for column of o
-			else {
-				for(int j = 2; j <= thirdSpot; j++) {
-					
-					int col = positionCorrection(j);
-					
-					if(gameBoard[row][col] != o) {
-						break;
-					}
-					
-					else {
-						winLine++;
-					}
-				} //end for loop for j
-				
-			} //end else statement
-			
-			//if there was a three in a column anywhere, return true
-			if(winLine == win) {
-				return true;
+					return true;
+				}
 			}
-			
-		} //end for loop for i
-		
+		}
+		return false;
+	}
+
+	/*
+	 * x - -
+	 * x - -
+	 * x - -
+	 */
+	public static boolean verticalCheck(char[][] gameBoard, char x, char o) {
+		char checker = ' ';
+		for(int i = fCol; i <= tCol; i+=2) {
+			checker = gameBoard[fRow][i];
+			if(checker == ' ') {
+				continue;
+			}
+			for(int j = fRow; j <= tRow; j+=2) {
+				char check = gameBoard[j][i];
+				if(check != checker) {
+					break;
+				}
+				if(j == tRow) {
+					if(checker == x) {
+						System.out.println(xWins);
+					}
+					else {
+						System.out.println(oWins);
+					}
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 	
-	public static boolean verticalCheck(char[][] gameBoard, char x, char o) {
-		
+	/*
+	public static boolean verticalCheck(char[][] gameBoard, char x, char o) {	
 		for(int i = 1; i <= thirdSpot; i++) {
 			int winLine = 0; //checks if there is three in a column for a symbol
 			boolean isX = false; //bool used to see if the symbol for check is x
@@ -229,8 +257,12 @@ public class TicTacToe {
 					
 					else {
 						winLine++;
+						if(winLine == win) {
+							System.out.println(xWins);
+						}
 					}
-		
+					
+				
 				} //end for loop for j
 
 			} //end if statement
@@ -247,9 +279,12 @@ public class TicTacToe {
 					
 					else {
 						winLine++;
+						if(winLine == win) {
+							System.out.println(oWins); 
+						}
 					}
 				} //end for loop for j
-				
+					
 			} //end else statement
 			
 			//if there was a three in a column anywhere, return true
@@ -261,10 +296,11 @@ public class TicTacToe {
 		
 		return false;
 	}
-	
+	*/
 	public static void choiceOfPositioning(char[][] gameBoard, char symbol) {
 		boolean loop = true;
 		while(loop == true) {
+			@SuppressWarnings("resource")
 			Scanner scan = new Scanner(System.in);
 			
 			System.out.print("Enter the row you want to input in (1-3): ");
